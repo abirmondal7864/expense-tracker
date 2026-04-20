@@ -54,9 +54,9 @@ export const updateExpense = async (req, res) => {
       return res.status(401).json({ message: "Not authorized" });
     }
 
-    expense.title = title || expense.title;
-    expense.amount = amount || expense.amount;
-    expense.category = category || expense.category;
+    if (title !== undefined) expense.title = title;
+    if (amount !== undefined) expense.amount = amount;
+    if (category !== undefined) expense.category = category;
 
     const updated = await expense.save();
 

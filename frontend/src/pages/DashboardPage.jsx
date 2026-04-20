@@ -10,13 +10,11 @@ import {
 export default function DashboardPage() {
   const { user, token, logout } = useContext(AuthContext);
   const [expenses, setExpenses] = useState([]);
-  const [amount, setAmount] = useState("");
-  const [title, setTitle] = useState("");
-  const [category, setCategory] = useState("");
-  const [editingExpense, setEditingExpense] = useState(null);
+  const [form, setForm] = useState({ title: "", amount: "", category: "" });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
+  const [editId, setEditId] = useState(null);
+  
   // Fetch expenses
   const fetchExpenses = async () => {
     try {
@@ -45,27 +43,30 @@ export default function DashboardPage() {
     await deleteExpense(id, token);
     setExpenses(expenses.filter((e) => e._id !== id));
   };
+
+  const handleEdit = (expense) => {
+    setEditId(expense._id);
+    setForm({
+      title: expense.title ?? "",
+      amount: expense.amount ?? "",
+      category: expense.category ?? "",
+    });
+  };
   // Update expense
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      if (editingExpense) {
-        await updateExpense(
-          editingExpense._id,
-          { title, amount, category },
-          token,
-        );
+      if (editId) {
+        await updateExpense(editId, form, token);
       } else {
-        await addExpense({ title, amount, category }, token);
+        await addExpense(form, token);
       }
 
       fetchExpenses();
 
-      setEditingExpense(null);
-      setTitle("");
-      setAmount("");
-      setCategory("");
+      setForm({ title: "", amount: "", category: "" });
+      setEditId(null);
     } catch (err) {
       console.error(err);
     }
@@ -88,30 +89,30 @@ export default function DashboardPage() {
       <form onSubmit={handleSubmit}>
         <input
           placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
+          value={form.title}
+          onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
         />
         <input
           placeholder="Amount"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          value={form.amount}
+          onChange={(e) => setForm((prev) => ({ ...prev, amount: e.target.value }))}
         />
         <input
           placeholder="Category"
-          value={category}
-          onChange={(e) => setCategory(e.target.value)}
+          value={form.category}
+          onChange={(e) =>
+            setForm((prev) => ({ ...prev, category: e.target.value }))
+          }
         />
         <button type="submit">
-          {editingExpense ? "Update" : "Add"}
+          {editId ? "Update Expense" : "Add Expense"}
         </button>
-        {editingExpense ? (
+        {editId ? (
           <button
             type="button"
             onClick={() => {
-              setEditingExpense(null);
-              setTitle("");
-              setAmount("");
-              setCategory("");
+              setEditId(null);
+              setForm({ title: "", amount: "", category: "" });
             }}
           >
             Cancel
@@ -127,14 +128,7 @@ export default function DashboardPage() {
         <div key={e._id}>
           {e.title} - ₹{e.amount}
           <button onClick={() => handleDelete(e._id)}>Delete</button>
-          <button
-            onClick={() => {
-              setEditingExpense(e);
-              setTitle(e.title ?? "");
-              setAmount(e.amount ?? "");
-              setCategory(e.category ?? "");
-            }}
-          >
+          <button onClick={() => handleEdit(e)}>
             Edit
           </button>
         </div>
