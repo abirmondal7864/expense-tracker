@@ -1,19 +1,31 @@
-import API from "./axios";
+import axios from "./axios";
 
-// GET all expenses
-export const getExpenses = async () => {
-  const { data } = await API.get("/expenses");
-  return data;
+// Get all expenses
+export const getExpenses = async (token) => {
+  const res = await axios.get("/expenses", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.data;
 };
 
-// ADD expense
-export const addExpense = async (expense) => {
-  const { data } = await API.post("/expenses", expense);
-  return data;
+// Add expense
+export const addExpense = async (data, token) => {
+  const res = await axios.post("/expenses", data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.data;
 };
 
-// DELETE expense
-export const deleteExpense = async (id) => {
-  const { data } = await API.delete(`/expenses/${id}`);
-  return data;
+// Delete expense
+export const deleteExpense = async (id, token) => {
+  const res = await axios.delete(`/expenses/${id}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.data;
 };
