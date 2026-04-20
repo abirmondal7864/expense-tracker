@@ -1,6 +1,7 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { successToast, errorToast } from "../utils/toast";
 
 const LoginPage = () => {
   const { login } = useContext(AuthContext);
@@ -13,24 +14,54 @@ const LoginPage = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    await login(form.email, form.password);
-    navigate("/");
+    try {
+      await login(form.email, form.password);
+      successToast("Login successful!");
+      navigate("/");
+    } catch (err) {
+      errorToast(err.message || "Login failed");
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        type="email"
-        placeholder="Email"
-        onChange={(e) => setForm({ ...form, email: e.target.value })}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        onChange={(e) => setForm({ ...form, password: e.target.value })}
-      />
-      <button type="submit">Login</button>
-    </form>
+    <main className="auth-page">
+      <section className="auth-panel">
+        <div className="brand-mark">ET</div>
+        <p className="eyebrow">Expense Tracker</p>
+        <h1>Welcome back</h1>
+        <p className="muted">Log in to keep your spending organized.</p>
+
+        <form className="stack" onSubmit={handleSubmit}>
+          <label>
+            Email
+            <input
+              type="email"
+              placeholder="you@example.com"
+              value={form.email}
+              required
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
+            />
+          </label>
+          <label>
+            Password
+            <input
+              type="password"
+              placeholder="Your password"
+              value={form.password}
+              required
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
+            />
+          </label>
+          <button className="primary-button" type="submit">
+            Login
+          </button>
+        </form>
+
+        <p className="auth-switch">
+          New here? <Link to="/register">Create an account</Link>
+        </p>
+      </section>
+    </main>
   );
 };
 

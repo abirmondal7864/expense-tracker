@@ -1,52 +1,39 @@
-import React, { useState } from "react";
-import ConfirmModal from "./ConfirmModal";
+import React from "react";
 
 const ExpenseItem = ({ expense, onDelete, onEdit }) => {
-  const [showModal, setShowModal] = useState(false);
+  const formatter = new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
+  });
+  const date = expense?.date
+    ? new Intl.DateTimeFormat("en-IN", {
+        day: "2-digit",
+        month: "short",
+        year: "numeric",
+      }).format(new Date(expense.date))
+    : "No date";
 
   return (
-    <div
-      style={{
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "space-between",
-        gap: 12,
-        padding: "10px 12px",
-        border: "1px solid #e5e7eb",
-        borderRadius: 10,
-        marginTop: 10,
-      }}
-    >
-      <div style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+    <article className="expense-item">
+      <div>
         <strong>{expense?.title}</strong>
-        <span style={{ opacity: 0.8 }}>
-          ₹{expense?.amount} {expense?.category ? `• ${expense.category}` : ""}
-        </span>
+        <span>{expense?.category || "General"} - {date}</span>
       </div>
 
-      <div style={{ display: "flex", gap: 10 }}>
-        <button onClick={onEdit} style={{ cursor: "pointer" }}>
+      <div className="expense-actions">
+        <b>{formatter.format(Number(expense?.amount) || 0)}</b>
+        <button className="secondary-button compact" onClick={onEdit}>
           Edit
         </button>
         <button
-          onClick={() => setShowModal(true)}
-          className="text-red-500"
-          style={{ color: "#ef4444", cursor: "pointer" }}
+          onClick={() => onDelete(expense._id)}
+          className="danger-button compact"
         >
           Delete
         </button>
       </div>
-
-      <ConfirmModal
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        text="Are you sure you want to delete this expense?"
-        onConfirm={() => {
-          onDelete(expense._id);
-          setShowModal(false);
-        }}
-      />
-    </div>
+    </article>
   );
 };
 

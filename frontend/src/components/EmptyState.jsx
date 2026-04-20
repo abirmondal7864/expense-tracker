@@ -1,28 +1,15 @@
 import React from "react";
 
-const EmptyState = ({ message, actionText, onAction }) => {
+const EmptyState = ({ message, subMessage, actionText, onAction }) => {
   return (
-    <div
-      className="flex flex-col items-center justify-center py-16 text-center"
-      style={{ padding: "64px 16px", textAlign: "center" }}
-    >
-      <h2 className="text-xl font-semibold mb-2" style={{ fontSize: 20, fontWeight: 600 }}>
-        {message}
-      </h2>
+    <div className="empty-state">
+      <h2>{message || "No expenses yet 😐"}</h2>
+      <p className="muted">{subMessage || "Start by adding your first expense"}</p>
 
       {actionText ? (
         <button
           onClick={onAction}
-          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          style={{
-            marginTop: 16,
-            padding: "10px 14px",
-            background: "#3b82f6",
-            color: "white",
-            border: 0,
-            borderRadius: 8,
-            cursor: "pointer",
-          }}
+          className="primary-button"
         >
           {actionText}
         </button>
@@ -32,4 +19,3 @@ const EmptyState = ({ message, actionText, onAction }) => {
 };
 
 export default EmptyState;
-
