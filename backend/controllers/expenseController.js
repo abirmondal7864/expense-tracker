@@ -32,3 +32,27 @@ export const deleteExpense = async (req, res) => {
     res.status(404).json({ message: "Expense not found" });
   }
 };
+
+// @desc Update expense
+export const updateExpense = async (req, res) => {
+  const { title, amount, category } = req.body;
+
+  const expense = await Expense.findById(req.params.id);
+
+  if (!expense) {
+    return res.status(404).json({ message: "Expense not found" });
+  }
+
+  // ensure user owns this expense
+  if (expense.user.toString() !== req.user._id.toString()) {
+    return res.status(401).json({ message: "Not authorized" });
+  }
+
+  expense.title = title || expense.title;
+  expense.amount = amount || expense.amount;
+  expense.category = category || expense.category;
+
+  const updatedExpense = await expense.save();
+
+  res.json(updatedExpense);
+};

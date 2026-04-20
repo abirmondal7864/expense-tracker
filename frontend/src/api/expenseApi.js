@@ -29,3 +29,13 @@ export const deleteExpense = async (id, token) => {
   });
   return res.data;
 };
+
+// Update expense
+export const updateExpense = async (id, data, token) => {
+  const res = await axios.put(`/expenses/${id}`, data, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  return res.data;
+};
