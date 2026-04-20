@@ -31,7 +31,8 @@ a {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
 }
 
@@ -52,7 +53,8 @@ label {
   gap: 8px;
 }
 
-input {
+input,
+select {
   background: #ffffff;
   border: 1px solid #cad6cf;
   border-radius: 8px;
@@ -63,7 +65,8 @@ input {
   width: 100%;
 }
 
-input:focus {
+input:focus,
+select:focus {
   border-color: #2a896a;
   box-shadow: 0 0 0 3px rgba(42, 137, 106, 0.18);
 }

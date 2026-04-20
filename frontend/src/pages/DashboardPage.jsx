@@ -6,6 +6,7 @@ import Button from "../components/ui/Button";
 import Input from "../components/ui/Input";
 import Modal from "../components/ui/Modal";
 import EmptyState from "../components/EmptyState";
+import ExpenseFilters from "../components/ExpenseFilters";
 import ExpenseItem from "../components/ExpenseItem";
 import {
   addExpense,
@@ -25,6 +26,7 @@ export default function DashboardPage() {
   const [editId, setEditId] = useState(null);
   const [showModal, setShowModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+  const [filters, setFilters] = useState({ search: "", category: "", sort: "" });
 
   // Fetch expenses
   const fetchExpenses = async () => {
@@ -111,6 +113,39 @@ export default function DashboardPage() {
       setSaving(false);
     }
   };
+
+  const categoriesList = Array.from(new Set(expenses.map((e) => e.category || "General")));
+
+  const getFilteredExpenses = () => {
+    let data = [...expenses];
+
+    // 1. Filter by category
+    if (filters.category) {
+      data = data.filter((exp) => (exp.category || "General") === filters.category);
+    }
+
+    // 2. Search by title
+    if (filters.search) {
+      data = data.filter((exp) =>
+        (exp.title || "").toLowerCase().includes(filters.search.toLowerCase())
+      );
+    }
+
+    // 3. Sort
+    if (filters.sort === "date_desc") {
+      data.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+    } else if (filters.sort === "date_asc") {
+      data.sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
+    } else if (filters.sort === "amount_desc") {
+      data.sort((a, b) => (b.amount || 0) - (a.amount || 0));
+    } else if (filters.sort === "amount_asc") {
+      data.sort((a, b) => (a.amount || 0) - (b.amount || 0));
+    }
+
+    return data;
+  };
+
+  const filteredExpenses = getFilteredExpenses();
 
   const total = expenses.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
   const largestExpense = expenses.reduce(
@@ -232,6 +267,14 @@ export default function DashboardPage() {
             <span className="pill">Largest {formatter.format(largestExpense)}</span>
           </div>
 
+          {expenses.length > 0 && (
+            <ExpenseFilters 
+              filters={filters} 
+              setFilters={setFilters} 
+              categories={categoriesList} 
+            />
+          )}
+
           {expenses.length === 0 ? (
             <EmptyState
               message="No expenses yet 😐"
@@ -239,9 +282,16 @@ export default function DashboardPage() {
               actionText="Add your first expense"
               onAction={() => setShowForm(true)}
             />
+          ) : filteredExpenses.length === 0 ? (
+            <EmptyState
+              message="No matches found"
+              subMessage="Try adjusting your search or filters"
+              actionText="Clear Filters"
+              onAction={() => setFilters({ search: "", category: "", sort: "" })}
+            />
           ) : (
             <div className="expense-list">
-              {expenses.map((e) => (
+              {filteredExpenses.map((e) => (
                 <ExpenseItem
                   key={e._id}
                   expense={e}
