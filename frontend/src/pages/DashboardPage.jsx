@@ -3,6 +3,8 @@ import { AuthContext } from "../context/AuthContext";
 import axios from "../api/axios";
 import toast from "react-hot-toast";
 import Loader from "../components/Loader";
+import EmptyState from "../components/EmptyState";
+import ExpenseItem from "../components/ExpenseItem";
 import {
   addExpense,
   deleteExpense,
@@ -13,6 +15,7 @@ export default function DashboardPage() {
   const { user, token, logout } = useContext(AuthContext);
   const [expenses, setExpenses] = useState([]);
   const [form, setForm] = useState({ title: "", amount: "", category: "" });
+  const [showForm, setShowForm] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [editId, setEditId] = useState(null);
@@ -61,6 +64,7 @@ export default function DashboardPage() {
 
   const handleEdit = (expense) => {
     setEditId(expense._id);
+    setShowForm(true);
     setForm({
       title: expense.title ?? "",
       amount: expense.amount ?? "",
@@ -108,54 +112,69 @@ export default function DashboardPage() {
 
       <hr />
 
-      <h3>Add Expense</h3>
-      <form onSubmit={handleSubmit}>
-        <input
-          placeholder="Title"
-          value={form.title}
-          onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
-        />
-        <input
-          placeholder="Amount"
-          value={form.amount}
-          onChange={(e) => setForm((prev) => ({ ...prev, amount: e.target.value }))}
-        />
-        <input
-          placeholder="Category"
-          value={form.category}
-          onChange={(e) =>
-            setForm((prev) => ({ ...prev, category: e.target.value }))
-          }
-        />
-        <button type="submit">
-          {editId ? "Update Expense" : "Add Expense"}
+      {showForm ? (
+        <>
+          <h3>{editId ? "Edit Expense" : "Add Expense"}</h3>
+          <form onSubmit={handleSubmit}>
+            <input
+              placeholder="Title"
+              value={form.title}
+              onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
+            />
+            <input
+              placeholder="Amount"
+              value={form.amount}
+              onChange={(e) => setForm((prev) => ({ ...prev, amount: e.target.value }))}
+            />
+            <input
+              placeholder="Category"
+              value={form.category}
+              onChange={(e) =>
+                setForm((prev) => ({ ...prev, category: e.target.value }))
+              }
+            />
+            <button type="submit">{editId ? "Update Expense" : "Add Expense"}</button>
+            {editId ? (
+              <button
+                type="button"
+                onClick={() => {
+                  setEditId(null);
+                  setForm({ title: "", amount: "", category: "" });
+                }}
+              >
+                Cancel
+              </button>
+            ) : (
+              <button type="button" onClick={() => setShowForm(false)}>
+                Hide
+              </button>
+            )}
+          </form>
+        </>
+      ) : (
+        <button type="button" onClick={() => setShowForm(true)}>
+          Add Expense
         </button>
-        {editId ? (
-          <button
-            type="button"
-            onClick={() => {
-              setEditId(null);
-              setForm({ title: "", amount: "", category: "" });
-            }}
-          >
-            Cancel
-          </button>
-        ) : null}
-      </form>
+      )}
 
       <hr />
 
       <h3>Expenses</h3>
       <h2>Total: ₹{total}</h2>
       {expenses.length === 0 ? (
-        <p>No expenses found</p>
+        <EmptyState
+          message="No expenses yet 💸"
+          actionText="Add your first expense"
+          onAction={() => setShowForm(true)}
+        />
       ) : (
         expenses.map((e) => (
-          <div key={e._id}>
-            {e.title} - ₹{e.amount}
-            <button onClick={() => handleDelete(e._id)}>Delete</button>
-            <button onClick={() => handleEdit(e)}>Edit</button>
-          </div>
+          <ExpenseItem
+            key={e._id}
+            expense={e}
+            onDelete={handleDelete}
+            onEdit={() => handleEdit(e)}
+          />
         ))
       )}
     </div>
