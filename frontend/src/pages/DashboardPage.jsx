@@ -1,6 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import axios from "../api/axios";
+import toast from "react-hot-toast";
+import Loader from "../components/Loader";
 import {
   addExpense,
   deleteExpense,
@@ -27,7 +29,9 @@ export default function DashboardPage() {
       });
       setExpenses(res.data);
     } catch (err) {
-      setError("Failed to load expenses");
+      const msg = err?.response?.data?.message || "Failed to load expenses";
+      setError(msg);
+      toast.error(msg);
     } finally {
       setLoading(false);
     }
@@ -40,8 +44,19 @@ export default function DashboardPage() {
 
   // Delete expense
   const handleDelete = async (id) => {
-    await deleteExpense(id, token);
-    setExpenses(expenses.filter((e) => e._id !== id));
+    try {
+      setLoading(true);
+      setError(null);
+      await deleteExpense(id, token);
+      setExpenses(expenses.filter((e) => e._id !== id));
+      toast.success("Deleted successfully");
+    } catch (err) {
+      const msg = err?.response?.data?.message || "Failed to delete expense";
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleEdit = (expense) => {
@@ -57,25 +72,33 @@ export default function DashboardPage() {
     e.preventDefault();
 
     try {
+      setLoading(true);
+      setError(null);
       if (editId) {
         await updateExpense(editId, form, token);
+        toast.success("Expense updated successfully");
       } else {
         await addExpense(form, token);
+        toast.success("Expense added successfully");
       }
 
-      fetchExpenses();
+      await fetchExpenses();
 
       setForm({ title: "", amount: "", category: "" });
       setEditId(null);
     } catch (err) {
-      console.error(err);
+      const msg = err?.response?.data?.message || "Failed to save expense";
+      setError(msg);
+      toast.error(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
   const total = expenses.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) return <Loader />;
+  if (error) return <p style={{ color: "red" }}>Error: {error}</p>;
 
   return (
     <div style={{ padding: 16 }}>
@@ -124,15 +147,17 @@ export default function DashboardPage() {
 
       <h3>Expenses</h3>
       <h2>Total: ₹{total}</h2>
-      {expenses.map((e) => (
-        <div key={e._id}>
-          {e.title} - ₹{e.amount}
-          <button onClick={() => handleDelete(e._id)}>Delete</button>
-          <button onClick={() => handleEdit(e)}>
-            Edit
-          </button>
-        </div>
-      ))}
+      {expenses.length === 0 ? (
+        <p>No expenses found</p>
+      ) : (
+        expenses.map((e) => (
+          <div key={e._id}>
+            {e.title} - ₹{e.amount}
+            <button onClick={() => handleDelete(e._id)}>Delete</button>
+            <button onClick={() => handleEdit(e)}>Edit</button>
+          </div>
+        ))
+      )}
     </div>
   );
 }
