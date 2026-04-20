@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
+import axios from "../api/axios";
 import {
-  getExpenses,
   addExpense,
   deleteExpense,
   updateExpense,
@@ -14,15 +14,30 @@ export default function DashboardPage() {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [editingExpense, setEditingExpense] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   // Fetch expenses
   const fetchExpenses = async () => {
-    const data = await getExpenses(token);
-    setExpenses(data);
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await axios.get("/expenses", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setExpenses(res.data);
+    } catch (err) {
+      setError("Failed to load expenses");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
-    if (token) fetchExpenses();
+    if (!token) return;
+    fetchExpenses();
   }, [token]);
 
   // Delete expense
@@ -55,6 +70,11 @@ export default function DashboardPage() {
       console.error(err);
     }
   };
+
+  const total = expenses.reduce((acc, curr) => acc + (Number(curr.amount) || 0), 0);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>{error}</p>;
 
   return (
     <div style={{ padding: 16 }}>
@@ -102,6 +122,7 @@ export default function DashboardPage() {
       <hr />
 
       <h3>Expenses</h3>
+      <h2>Total: ₹{total}</h2>
       {expenses.map((e) => (
         <div key={e._id}>
           {e.title} - ₹{e.amount}
