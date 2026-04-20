@@ -7,6 +7,7 @@ import Input from "../components/ui/Input";
 import Modal from "../components/ui/Modal";
 import EmptyState from "../components/EmptyState";
 import ExpenseFilters from "../components/ExpenseFilters";
+import Analytics from "../components/Analytics";
 import ExpenseItem from "../components/ExpenseItem";
 import {
   addExpense,
@@ -274,6 +275,8 @@ export default function DashboardPage() {
               categories={categoriesList} 
             />
           )}
+
+          <Analytics expenses={filteredExpenses} />
 
           {expenses.length === 0 ? (
             <EmptyState

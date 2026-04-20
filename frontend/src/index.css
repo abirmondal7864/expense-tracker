@@ -231,6 +231,12 @@ h2 {
   margin-bottom: 18px;
 }
 
+.analytics-grid {
+  display: grid;
+  gap: 18px;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+}
+
 .summary-tile,
 .expense-form-panel,
 .expense-list-panel {
@@ -412,6 +418,7 @@ h2 {
 
 @media (max-width: 840px) {
   .summary-grid,
+  .analytics-grid,
   .content-grid {
     grid-template-columns: 1fr;
   }
