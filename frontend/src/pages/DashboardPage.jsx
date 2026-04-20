@@ -1,7 +1,10 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { successToast, errorToast } from "../utils/toast";
-import Loader from "../components/Loader";
+import Loader from "../components/ui/Loader";
+import Button from "../components/ui/Button";
+import Input from "../components/ui/Input";
+import Modal from "../components/ui/Modal";
 import EmptyState from "../components/EmptyState";
 import ExpenseItem from "../components/ExpenseItem";
 import {
@@ -122,7 +125,7 @@ export default function DashboardPage() {
     maximumFractionDigits: 0,
   });
 
-  if (loading) return <Loader />;
+  if (loading) return <Loader fullPage={true} />;
 
   return (
     <main className="dashboard-page">
@@ -132,9 +135,9 @@ export default function DashboardPage() {
           <h1>Dashboard</h1>
           <p className="muted">Logged in as {user?.email}</p>
         </div>
-        <button className="ghost-button" onClick={logout}>
+        <Button variant="ghost" onClick={logout}>
           Logout
-        </button>
+        </Button>
       </header>
 
       {error ? <p className="alert">Error: {error}</p> : null}
@@ -166,52 +169,45 @@ export default function DashboardPage() {
               <h2>{editId ? "Edit expense" : "Add expense"}</h2>
             </div>
             {!showForm ? (
-              <button className="secondary-button" type="button" onClick={() => setShowForm(true)}>
+              <Button variant="secondary" onClick={() => setShowForm(true)}>
                 Add Expense
-              </button>
+              </Button>
             ) : null}
           </div>
 
           {showForm ? (
             <form className="stack" onSubmit={handleSubmit}>
-              <label>
-                Title
-                <input
-                  placeholder="Groceries"
-                  value={form.title}
-                  required
-                  onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
-                />
-              </label>
-              <label>
-                Amount
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  placeholder="1200"
-                  value={form.amount}
-                  required
-                  onChange={(e) => setForm((prev) => ({ ...prev, amount: e.target.value }))}
-                />
-              </label>
-              <label>
-                Category
-                <input
-                  placeholder="Food"
-                  value={form.category}
-                  onChange={(e) =>
-                    setForm((prev) => ({ ...prev, category: e.target.value }))
-                  }
-                />
-              </label>
+              <Input
+                label="Title"
+                placeholder="Groceries"
+                value={form.title}
+                required
+                onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
+              />
+              <Input
+                label="Amount"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="1200"
+                value={form.amount}
+                required
+                onChange={(e) => setForm((prev) => ({ ...prev, amount: e.target.value }))}
+              />
+              <Input
+                label="Category"
+                placeholder="Food"
+                value={form.category}
+                onChange={(e) =>
+                  setForm((prev) => ({ ...prev, category: e.target.value }))
+                }
+              />
               <div className="form-actions">
-                <button className="primary-button" type="submit" disabled={saving}>
-                  {saving ? "Saving..." : editId ? "Update Expense" : "Add Expense"}
-                </button>
-                <button
-                  className="secondary-button"
-                  type="button"
+                <Button variant="primary" type="submit" loading={saving}>
+                  {editId ? "Update Expense" : "Add Expense"}
+                </Button>
+                <Button
+                  variant="secondary"
                   onClick={() => {
                     setEditId(null);
                     setForm({ title: "", amount: "", category: "General" });
@@ -219,7 +215,7 @@ export default function DashboardPage() {
                   }}
                 >
                   {editId ? "Cancel" : "Hide"}
-                </button>
+                </Button>
               </div>
             </form>
           ) : (
@@ -258,22 +254,20 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {showModal && (
-        <div className="modal-overlay">
-          <div className="modal">
-            <h3>Are you sure?</h3>
-            <p>This action cannot be undone.</p>
-
-            <button onClick={() => setShowModal(false)}>
+      <Modal isOpen={showModal} onClose={() => setShowModal(false)}>
+        <div style={{ textAlign: "center" }}>
+          <h3 style={{ marginBottom: "10px" }}>Are you sure?</h3>
+          <p className="muted" style={{ marginBottom: "20px" }}>This action cannot be undone.</p>
+          <div className="modal-actions">
+            <Button variant="secondary" onClick={() => setShowModal(false)} disabled={saving}>
               Cancel
-            </button>
-
-            <button onClick={confirmDelete} style={{ color: "red" }}>
+            </Button>
+            <Button variant="danger" onClick={confirmDelete} loading={saving}>
               Delete
-            </button>
+            </Button>
           </div>
         </div>
-      )}
+      </Modal>
     </main>
   );
 }
