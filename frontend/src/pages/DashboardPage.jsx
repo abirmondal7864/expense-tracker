@@ -44,11 +44,6 @@ export default function DashboardPage() {
       setLoading(false);
     }
   };
-      errorToast(msg);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     if (!token) return;
@@ -71,6 +66,12 @@ export default function DashboardPage() {
       successToast("Deleted successfully");
     } catch (err) {
       const msg = err?.response?.data?.message || "Failed to delete expense";
+      setError(msg);
+      errorToast(msg);
+    } finally {
+      setSaving(false);
+    }
+  };
   const handleEdit = (expense) => {
     setEditId(expense._id);
     setShowForm(true);
