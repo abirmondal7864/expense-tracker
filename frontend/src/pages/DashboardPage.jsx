@@ -16,8 +16,10 @@ import {
   updateExpense,
 } from "../api/expenseApi";
 
+import { logout } from "../utils/auth";
+
 export default function DashboardPage() {
-  const { user, token, logout } = useContext(AuthContext);
+  const { user, token } = useContext(AuthContext);
   const [expenses, setExpenses] = useState([]);
   const [form, setForm] = useState({ title: "", amount: "", category: "General" });
   const [showForm, setShowForm] = useState(true);
