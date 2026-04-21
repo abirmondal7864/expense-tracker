@@ -14,7 +14,8 @@ const app = express();
 // middleware
 app.use(
   cors({
-    origin: process.env.CLIENT_URL || true,
+    origin:
+      "https://expense-tracker-oai49l4wt-abirmondal7864s-projects.vercel.app/login",
     credentials: true,
   }),
 );
