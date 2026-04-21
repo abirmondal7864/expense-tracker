@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://expense-tracker-fgcc.onrender.com",
+  baseURL: "https://expense-tracker-fgcc.onrender.com/",
 });
 
 // Attach token automatically
