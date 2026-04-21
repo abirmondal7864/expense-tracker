@@ -19,12 +19,9 @@ const LoginPage = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const data = await loginUser(form);
-      localStorage.setItem("user", JSON.stringify(data));
-      localStorage.setItem("token", data.token);
+      await login(form.email, form.password);
       successToast("Login successful!");
       navigate("/");
-      window.location.reload(); 
     } catch (err) {
       errorToast(err.message || "Login failed");
     } finally {
