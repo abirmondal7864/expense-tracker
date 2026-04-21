@@ -7,7 +7,9 @@ import DashboardPage from "./pages/DashboardPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import { ToastContainer } from "react-toastify";
+import { Analytics } from "@vercel/analytics/react";
 import "react-toastify/dist/ReactToastify.css";
+import { SpeedInsights } from "@vercel/speed-insights/react";
 
 function App() {
   return (
@@ -40,6 +42,8 @@ function App() {
         draggable
         theme="colored"
       />
+      <Analytics />
+      <SpeedInsights />
     </BrowserRouter>
   );
 }
