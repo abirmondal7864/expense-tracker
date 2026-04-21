@@ -2,6 +2,7 @@ import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { successToast, errorToast } from "../utils/toast";
+import { loginUser } from "../services/authService";
 
 const LoginPage = () => {
   const { login } = useContext(AuthContext);
@@ -12,14 +13,22 @@ const LoginPage = () => {
     password: "",
   });
 
+  const [loading, setLoading] = useState(false);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
-      await login(form.email, form.password);
+      const data = await loginUser(form);
+      localStorage.setItem("user", JSON.stringify(data));
+      localStorage.setItem("token", data.token);
       successToast("Login successful!");
       navigate("/");
+      window.location.reload(); 
     } catch (err) {
       errorToast(err.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -59,8 +68,8 @@ const LoginPage = () => {
             </Link>
           </div>
 
-          <button className="primary-button" type="submit">
-            Login
+          <button className="primary-button" type="submit" disabled={loading}>
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 

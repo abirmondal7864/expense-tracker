@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import ProtectedRoute from "./components/ProtectedRoute";
+import PrivateRoute from "./components/PrivateRoute";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
@@ -21,9 +21,9 @@ function App() {
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute>
+            <PrivateRoute>
               <DashboardPage />
-            </ProtectedRoute>
+            </PrivateRoute>
           }
         />
 
