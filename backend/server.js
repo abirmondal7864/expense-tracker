@@ -12,12 +12,21 @@ const app = express();
 
 
 // middleware
+// 📁 backend/server.js
+
 app.use(
   cors({
-    origin: "https://expense-tracker-oai49l4wt-abirmondal7864s-projects.vercel.app/",
+    origin: (origin, callback) => {
+      if (!origin || origin.includes("vercel.app")) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
-  }),
+  })
 );
+
 app.use(express.json());
 
 // routes
