@@ -52,6 +52,13 @@ const LoginPage = () => {
               onChange={(e) => setForm({ ...form, password: e.target.value })}
             />
           </label>
+          
+          <div style={{ textAlign: "right", marginTop: "-10px", marginBottom: "15px" }}>
+            <Link to="/forgot-password" style={{ fontSize: "0.875rem", color: "var(--brand-dark)" }}>
+              Forgot password?
+            </Link>
+          </div>
+
           <button className="primary-button" type="submit">
             Login
           </button>

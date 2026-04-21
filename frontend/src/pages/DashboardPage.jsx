@@ -80,6 +80,7 @@ export default function DashboardPage() {
       amount: expense.amount ?? "",
       category: expense.category ?? "General",
     });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   // Update expense
@@ -245,13 +246,13 @@ export default function DashboardPage() {
                 </Button>
                 <Button
                   variant="secondary"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault();
                     setEditId(null);
                     setForm({ title: "", amount: "", category: "General" });
-                    setShowForm(!editId ? false : true);
                   }}
                 >
-                  {editId ? "Cancel" : "Hide"}
+                  {editId ? "Cancel Edit" : "Clear"}
                 </Button>
               </div>
             </form>
