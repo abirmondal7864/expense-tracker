@@ -1,8 +1,11 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://expense-tracker-fgcc.onrender.com/",
+  baseURL: "https://expense-tracker-fgcc.onrender.com/api",
+  timeout: 60000
 });
+
+export default API;
 
 // Attach token automatically
 API.interceptors.request.use((req) => {
@@ -14,5 +17,3 @@ API.interceptors.request.use((req) => {
 
   return req;
 });
-
-export default API;
