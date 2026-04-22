@@ -104,14 +104,14 @@ const Analytics = ({ expenses }) => {
       <div className="analytics-grid">
         <div className="summary-tile" style={{ display: "block", minHeight: "300px" }}>
           <h4 style={{ marginBottom: "16px", color: "#66726c", fontWeight: '700' }}>Monthly Spent</h4>
-          <div style={{ height: "230px" }}>
+          <div style={{ height: "230px", position: "relative", width: "100%" }}>
             <Bar data={barData} options={barOptions} />
           </div>
         </div>
 
         <div className="summary-tile" style={{ display: "block", minHeight: "300px" }}>
           <h4 style={{ marginBottom: "16px", color: "#66726c", fontWeight: '700' }}>By Category</h4>
-          <div style={{ height: "230px", display: "flex", justifyContent: "center" }}>
+          <div style={{ height: "230px", position: "relative", width: "100%" }}>
             <Pie data={pieData} options={pieOptions} />
           </div>
         </div>

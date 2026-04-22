@@ -288,6 +288,7 @@ h2 {
 .expense-form-panel,
 .expense-list-panel {
   padding: 22px;
+  min-width: 0;
 }
 
 .section-heading {
