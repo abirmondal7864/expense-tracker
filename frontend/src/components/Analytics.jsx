@@ -87,7 +87,7 @@ const Analytics = ({ expenses }) => {
     responsive: true,
     maintainAspectRatio: false,
     plugins: {
-      legend: { position: "right" },
+      legend: { position: "bottom" },
     },
   };
 

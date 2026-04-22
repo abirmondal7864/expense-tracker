@@ -16,12 +16,17 @@
 body {
   min-width: 320px;
   min-height: 100vh;
+  overflow-x: hidden;
   background:
     linear-gradient(135deg, rgba(42, 137, 106, 0.12), transparent 34%),
     linear-gradient(315deg, rgba(220, 82, 82, 0.1), transparent 30%),
     #f6f8f7;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  overflow-x: hidden;
 }
 
 a {
