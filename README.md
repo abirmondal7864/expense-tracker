@@ -37,10 +37,11 @@ Mongoose
 
 | Layer | Technologies |
 |---|---|
-| Frontend | React, Axios, Chart.js, CSS |
-| Backend | Node.js, Express.js |
+| Frontend | React 19, TypeScript, Vite, Axios, Chart.js, CSS |
+| Backend | Node.js, Express 5, TypeScript (ES Modules) |
 | Database | MongoDB, Mongoose |
-| Authentication | JWT |
+| Authentication | JWT, bcrypt |
+| Testing | Vitest, React Testing Library, Supertest |
 | Deployment | Vercel, Render |
 
 ## 📸 Screenshots
@@ -75,10 +76,17 @@ MONGO_URI=your_mongodb_connection_string
 JWT_SECRET=your_secret_key
 ```
 
-Run:
+Run in development:
 
 ```bash
 npm run dev
+```
+
+Build and run in production:
+
+```bash
+npm run build
+npm start
 ```
 
 ### Frontend
@@ -94,6 +102,42 @@ Create `.env`:
 ```env
 VITE_API_URL=your_backend_url
 ```
+
+## 🧪 Testing & Coverage
+
+Both frontend and backend use **Vitest** with `@vitest/coverage-v8` for automated testing and coverage reporting.
+
+### Frontend Tests
+
+Uses Vitest, React Testing Library, `@testing-library/user-event`, and `jsdom`.
+
+```bash
+cd frontend
+npm test              # Run all frontend tests once
+npm run test:watch    # Run tests in watch mode
+npm run test:coverage # Run tests with V8 coverage report
+npm run typecheck     # Run TypeScript compiler check (tsc --noEmit)
+```
+
+Measured frontend test results:
+- **Test suites**: 6 files, 25 tests passing
+- **Coverage**: 80.37% statements, 64.43% branches, 77.77% functions, 80.73% lines
+
+### Backend Tests
+
+Uses Vitest and Supertest with mocked Mongoose models and email transport (never connects to production MongoDB).
+
+```bash
+cd backend
+npm test              # Run all backend tests once
+npm run test:watch    # Run tests in watch mode
+npm run test:coverage # Run tests with V8 coverage report
+npm run typecheck     # Run TypeScript compiler check (tsc --noEmit)
+```
+
+Measured backend test results:
+- **Test suites**: 3 files, 33 tests passing
+- **Coverage**: 87.2% statements, 71% branches, 93.33% functions, 87.57% lines
 
 ## 🎯 What This Project Demonstrates
 

@@ -3,6 +3,10 @@ node_modules/
 npm-debug.log
 yarn-error.log
 
+# Build & Testing
+dist/
+coverage/
+
 # Environment variables
 .env
 .env.local
