@@ -75,7 +75,7 @@ describe("Expenses API", () => {
   });
 
   describe("POST /api/expenses", () => {
-    it("creates a new expense", async () => {
+    it("creates a new expense with trimmed title and category", async () => {
       const created = {
         _id: new mongoose.Types.ObjectId().toString(),
         user: userId.toString(),
@@ -88,21 +88,49 @@ describe("Expenses API", () => {
       const res = await request(app)
         .post("/api/expenses")
         .set("Authorization", `Bearer ${authToken}`)
-        .send({ title: "Coffee", amount: 150, category: "Food" });
+        .send({ title: "  Coffee  ", amount: 150, category: "  Food " });
 
       expect(res.status).toBe(201);
       expect(res.body.title).toBe("Coffee");
       expect(res.body.amount).toBe(150);
+      expect(mockExpenseCreate).toHaveBeenCalledWith({
+        user: userId,
+        title: "Coffee",
+        amount: 150,
+        category: "Food",
+      });
     });
 
-    it("returns 400 when title or amount is invalid", async () => {
+    it("returns 400 when title is empty or whitespace", async () => {
       const res = await request(app)
         .post("/api/expenses")
         .set("Authorization", `Bearer ${authToken}`)
-        .send({ title: "" });
+        .send({ title: "   ", amount: 100 });
 
       expect(res.status).toBe(400);
-      expect(res.body.message).toBe("Title and valid amount are required");
+      expect(res.body.message).toBe("Title is required");
+    });
+
+    it("returns 400 when amount is zero, negative, or invalid", async () => {
+      for (const badAmount of [0, -50, "abc", "", null, true]) {
+        const res = await request(app)
+          .post("/api/expenses")
+          .set("Authorization", `Bearer ${authToken}`)
+          .send({ title: "Coffee", amount: badAmount });
+
+        expect(res.status).toBe(400);
+        expect(res.body.message).toBe("Amount must be a positive number");
+      }
+    });
+
+    it("returns 400 when category is not a string", async () => {
+      const res = await request(app)
+        .post("/api/expenses")
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({ title: "Coffee", amount: 100, category: 123 });
+
+      expect(res.status).toBe(400);
+      expect(res.body.message).toBe("Category must be a string");
     });
   });
 
@@ -129,7 +157,7 @@ describe("Expenses API", () => {
       const res = await request(app)
         .put(`/api/expenses/${expenseId}`)
         .set("Authorization", `Bearer ${authToken}`)
-        .send({ title: "Updated Groceries", amount: 750 });
+        .send({ title: "  Updated Groceries ", amount: 750 });
 
       expect(res.status).toBe(200);
       expect(res.body.title).toBe("Updated Groceries");
@@ -144,6 +172,66 @@ describe("Expenses API", () => {
 
       expect(res.status).toBe(400);
       expect(res.body.message).toBe("Invalid expense id");
+    });
+
+    it("returns 400 when update payload is empty or has no updatable fields", async () => {
+      const expenseId = new mongoose.Types.ObjectId().toString();
+
+      const emptyRes = await request(app)
+        .put(`/api/expenses/${expenseId}`)
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({});
+
+      expect(emptyRes.status).toBe(400);
+      expect(emptyRes.body.message).toBe(
+        "At least one field (title, amount, or category) is required"
+      );
+
+      const arrayRes = await request(app)
+        .put(`/api/expenses/${expenseId}`)
+        .set("Authorization", `Bearer ${authToken}`)
+        .send([]);
+
+      expect(arrayRes.status).toBe(400);
+      expect(arrayRes.body.message).toBe("Invalid update payload");
+    });
+
+    it("returns 400 when updated title, amount, or category is invalid", async () => {
+      const expenseId = new mongoose.Types.ObjectId().toString();
+
+      const badTitleRes = await request(app)
+        .put(`/api/expenses/${expenseId}`)
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({ title: "   " });
+      expect(badTitleRes.status).toBe(400);
+      expect(badTitleRes.body.message).toBe("Title must be a non-empty string");
+
+      const zeroAmountRes = await request(app)
+        .put(`/api/expenses/${expenseId}`)
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({ amount: 0 });
+      expect(zeroAmountRes.status).toBe(400);
+      expect(zeroAmountRes.body.message).toBe(
+        "Amount must be a positive number"
+      );
+
+      const negativeAmountRes = await request(app)
+        .put(`/api/expenses/${expenseId}`)
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({ amount: -25 });
+      expect(negativeAmountRes.status).toBe(400);
+      expect(negativeAmountRes.body.message).toBe(
+        "Amount must be a positive number"
+      );
+
+      const badCategoryRes = await request(app)
+        .put(`/api/expenses/${expenseId}`)
+        .set("Authorization", `Bearer ${authToken}`)
+        .send({ category: "  " });
+      expect(badCategoryRes.status).toBe(400);
+      expect(badCategoryRes.body.message).toBe(
+        "Category must be a non-empty string"
+      );
     });
 
     it("returns 404 when expense is not found", async () => {

@@ -125,19 +125,19 @@ Measured frontend test results:
 
 ### Backend Tests
 
-Uses Vitest and Supertest with mocked Mongoose models and email transport (never connects to production MongoDB).
+Uses Vitest and Supertest with mocked database operations and email transport (never connects to production MongoDB), plus unit tests for the Mongoose `User` model and database connection helper.
 
 ```bash
 cd backend
 npm test              # Run all backend tests once
 npm run test:watch    # Run tests in watch mode
 npm run test:coverage # Run tests with V8 coverage report
-npm run typecheck     # Run TypeScript compiler check (tsc --noEmit)
+npm run typecheck     # Run TypeScript compiler check (app + tests)
 ```
 
 Measured backend test results:
-- **Test suites**: 3 files, 33 tests passing
-- **Coverage**: 87.2% statements, 71% branches, 93.33% functions, 87.57% lines
+- **Test suites**: 5 files, 48 tests passing
+- **Coverage**: 90.75% statements, 80.39% branches, 95.23% functions, 91.02% lines
 
 ## 🎯 What This Project Demonstrates
 

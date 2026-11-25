@@ -9,8 +9,10 @@ export default defineConfig({
       reporter: ["text", "html", "json-summary"],
       include: [
         "app.ts",
+        "config/**/*.ts",
         "controllers/**/*.ts",
         "middleware/**/*.ts",
+        "models/**/*.ts",
         "routes/**/*.ts",
         "utils/**/*.ts",
       ],
